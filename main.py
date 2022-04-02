@@ -3,7 +3,7 @@
 
 
 """
-import functions
+import board
 
 
 if __name__ == '__main__' :

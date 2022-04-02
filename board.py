@@ -19,7 +19,10 @@ class board():
         self.rows=3
         self.columns=3
         self.empty_box='_'
-        # could have more than one player?
+
+        # a player could be a class
+        self.players = ['nought', 'cross']
+
         self.markers = {'nought':'0', 'cross':'X'}
 
         # could us a numoy array
@@ -43,23 +46,28 @@ class board():
 
         return self.grid[location[0]][location[1]]
 
-    def set_grid_value(self, location, marker):
+    def set_grid_value(self, location, player):
+
+        # only adds markers, doens't reset the board
 
         assert self.check_within_board(location)
 
-        self.grid[location[0]][ location[1]] = marker
+        self.grid[location[0]][ location[1]] = self.markers[player]
 
     def check_within_board(self, location):
 
-        assert 0 <= location[0] <=self.rows
+        if 0 <= location[0] <=self.rows and 0 <= location[1] <=self.columns:
 
-        assert 0 <= location[1] <=self.columns
-
-        return True
+            return True
+        
+        else:
+             return False
 
     def check_legal_move(self, location):
         """ a move is only legal if it is the empty box
         """
+        assert self.check_within_board()
+
         if self.get_grid_value(location) == self.empty_box:
 
             return True
