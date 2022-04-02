@@ -56,6 +56,7 @@ class board():
 
     def check_within_board(self, location):
 
+
         if 0 <= location[0] <=self.rows and 0 <= location[1] <=self.columns:
 
             return True
@@ -66,7 +67,7 @@ class board():
     def check_legal_move(self, location):
         """ a move is only legal if it is the empty box
         """
-        assert self.check_within_board()
+        assert self.check_within_board(location)
 
         if self.get_grid_value(location) == self.empty_box:
 
@@ -88,6 +89,42 @@ class board():
         
         return legal_moves
 
+    def check_for_victory(self):
+
+        # must be three in a row, of either marker type
+        # this is where a different data strucutre for the grid may be better
+
+        # all values in "row" are the same:
+        winner = None
+
+        to_check=list()
+
+        for i in range(3):
+
+            to_check = to_check + [[[i,j] for j in range(3)]]
+
+        for j in range(3):
+
+            to_check = to_check + [[[i,j] for i in range(3)]]
+
+        to_check = to_check + [[[i,i] for i in range(3)]]
+
+        grid_values = [[self.get_grid_value(location) for location in tripple] for tripple in to_check]
+
+        if True in [not False in [self.markers['cross'] == value  for value in tripple] for tripple in grid_values]:
+            # 'X' has won
+            winner = 'cross'
+
+
+        elif True in [not False in [self.markers['nought'] == value  for value in tripple] for tripple in grid_values]:
+            # '0' has won
+            winner = 'nought'
+
+        if not winner is None:
+            return True, winner
+
+        else:
+            return False, winner
     
 
 
