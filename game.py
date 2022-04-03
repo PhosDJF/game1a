@@ -7,36 +7,70 @@
 6) reset the board and start again (maybe keep a log of the scores)
 
 TODO:
- - actually end the game when it is won
- - return the result from the start_game method
- - store this is the main program, or a super-game class
- - add more comunication about what the AI is doing
- -  could throw in some amusing one-liners comentating the ai thinking
- - consider re doing the "player" so they are a class - easier to access things about them
- - more thorough testing of wierd things - make tit so the game doesn't fall over too easily
-    - work around wierd inputs from the human for example
-- seems to break after the human tries an invalid location, then a good one
 
+ - add more comunication about what the AI is doing
+ - could throw in some amusing one-liners comentating the ai thinking
+ - more thorough testing of wierd things - make it so the game doesn't fall over too easily
+    - work around wierd inputs from the human for example
+- seperate classes for different ai
 
 """
 import board
 import random
+import player
 
 from  helpers import linebreak 
+
+
+def try_int_input(text_to_display, legal_range=None):
+
+    if not legal_range is None:
+
+        fail_message = 'invlaid input, expecting an int in {}'.format(legal_range)
+
+    else:
+
+        fail_message = 'invlaid input, expecting an int'
+
+    try:
+        response= int(input(text_to_display))
+
+        if not legal_range is None:
+
+            if response in legal_range:
+                return response
+
+            else:
+                print(fail_message)
+
+            return try_int_input(text_to_display)
+
+        return response
+
+    except:
+
+        print(fail_message)
+
+        return try_int_input(text_to_display)
+
+
+
+
+
+
+
 
 class game():
 
     def __init__(self):
-        #not sure if will be needed
-        self.game_board = board.board()
-        self.first_player = self.game_board.players[0]
-        self.second_player = self.game_board.players[1]
 
-        self.player_kinds = ['human', 'ai']
+        pass
+        
 
     def decide_who_first(self):
-        #start by hardcoing as the human
-        return self.player_kinds[0]
+
+        return 'human'
+        #TODO make this an option to choose, or be random
 
 
     def ai_choice(self):
@@ -48,13 +82,12 @@ class game():
 
     def ask_human_for_move(self):
 
-        print(linebreak)
         print("see the current state:")
         self.game_board.show()
 
-        row = int(input("Which row?: "))
+        row = try_int_input("Which row?: ", legal_range=range(1,4))-1
 
-        column = int(input("Which column?: "))
+        column = try_int_input("Which column?: ", legal_range=range(1,4))-1
 
         if self.game_board.check_legal_move([row, column]):
 
@@ -63,12 +96,12 @@ class game():
         else:
             print('Sorry, not a legal move, try again')
             print('the legal moves are: {}'.format(self.game_board.find_legal_moves()))
-            self.ask_human_for_move()
+            return self.ask_human_for_move()
 
-    def take_turn(self, player_kind, player):
+    def take_turn(self, player):
 
         # get the move
-        if player_kind == 'human':
+        if player.kind == 'human':
 
             location = self.ask_human_for_move()
 
@@ -77,42 +110,118 @@ class game():
             location = self.ai_choice()
 
         # put the move on the board
-        self.game_board.set_grid_value(location, player)
+        self.game_board.set_grid_value(location, player.marker)
 
         # has the game ended?
-        victory_condition = self.game_board.check_for_victory()
-        if victory_condition[0] == True:
+        if self.game_board.check_for_victory() == True:
             #the game has been won
-            print("game won by {}".format(victory_condition[1]))
+            print("game won by {}".format(player.kind))
+            print('This was the final position:')
+            self.game_board.show()
+
+            return True
 
 
-        elif len(self.game_board.find_legal_moves()) ==0:
+        elif self.game_board.check_for_full_board() == True:
             # no more legal moves
             # so it is a draw
             print("the game is a draw")
+            print('This was the final position:')
+            self.game_board.show()
+
+            return False
 
         else:
-            return 
+            return None
 
     def start_game(self):
 
-        player_kind_first = self.decide_who_first()
-        player_kind_second = [a for a in self.player_kinds if not a== player_kind_first][0]
+        
 
-        print('the first player will be {}'.format(player_kind_first))
+        player1 = player.Player()
 
-        player1 = self.first_player
+        player2 = player.Player()
 
-        player2 = self.second_player
 
-        while True:
+        player1.set_type('human')
+        player1.set_team('nought')
+
+        player2.set_type('human', opposite=True)
+        player2.set_team('cross')
+
+        rounds = try_int_input('How many rounds would you like to play?:', legal_range=range(1,10))
+
+        round=1
+
+        while round<=rounds:
+
+            if rounds == round:
+
+                print('=== Final Round Begins !! ===')
+
+            else:
+
+                print('=== Round {} Begins !! ==='.format(round))
+
+            self.run_a_round(player1, player2)
+
+            if rounds == round:
+
+                print('=== End of Final Round !! ===')
+
+            else:
+                
+                print('=== End of Round {} !! ==='.format(round))
+
+            if rounds == round:
+                print('The final scores are :')
+
+            else:
+                print('The current scores are :')
+
+            print('player1 ({0}) has {1} points'.format(player1.kind, player1.score))
+            print('player2 ({0}) has {1} points'.format(player2.kind, player2.score))
+
+
+            round = round + 1
+
+        if player1.score>player2.score:
+            print('Player 1 Wins !')
+
+        
+        elif player2.score>player1.score:
+            print('Player 2 Wins !')
+
+        else:
+            print("it's a Draw !")
+
+        print('Thanks for playing :)')
+
+    def run_a_round(self, first_player, second_player):
+
+        self.game_board = board.board()
+
+        result=None
+
+        player_ind = 0
+
+        player_list=[first_player, second_player]
+
+        while result is None:
 
             #player1
-            self.take_turn(player_kind_first, player1)
+            result = self.take_turn(player_list[player_ind])
 
-            #players
-            self.take_turn(player_kind_second, player2)
+            if result == True:
 
+                player_list[player_ind].score_a_point()
+            
+            player_ind = (player_ind+1) % 2
+
+
+
+
+        
 
 
 

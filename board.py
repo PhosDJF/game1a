@@ -7,7 +7,7 @@ plan-
 
 """
 
-from  helpers import linebreak 
+from  helpers import linebreak , markers, buffer
 
 class board():
 
@@ -20,11 +20,6 @@ class board():
         self.columns=3
         self.empty_box='_'
 
-        # a player could be a class
-        self.players = ['nought', 'cross']
-
-        self.markers = {'nought':'0', 'cross':'X'}
-
         # could us a numoy array
         # or a ditionary
         # start by trying simply nested lists
@@ -35,9 +30,10 @@ class board():
         """
         print(linebreak)
 
-        # TODO add a buffer so the board is more central when printed
         for i in range(self.rows):
-            print('|'.join(self.grid[i]))
+
+            print(buffer + '|'.join(self.grid[i]))
+            
         print(linebreak)
 
     def get_grid_value(self, location):
@@ -46,18 +42,18 @@ class board():
 
         return self.grid[location[0]][location[1]]
 
-    def set_grid_value(self, location, player):
+    def set_grid_value(self, location, marker):
 
         # only adds markers, doens't reset the board
 
         assert self.check_within_board(location)
 
-        self.grid[location[0]][ location[1]] = self.markers[player]
+        self.grid[location[0]][ location[1]] = marker
 
     def check_within_board(self, location):
 
 
-        if 0 <= location[0] <=self.rows and 0 <= location[1] <=self.columns:
+        if 0 <= location[0] <self.rows and 0 <= location[1] <self.columns:
 
             return True
         
@@ -65,11 +61,9 @@ class board():
              return False
 
     def check_legal_move(self, location):
-        """ a move is only legal if it is the empty box
+        """ a move is only legal if it is the empty box and within the grid
         """
-        assert self.check_within_board(location)
-
-        if self.get_grid_value(location) == self.empty_box:
+        if self.check_within_board(location) and (self.get_grid_value(location) == self.empty_box):
 
             return True
 
@@ -111,20 +105,25 @@ class board():
 
         grid_values = [[self.get_grid_value(location) for location in tripple] for tripple in to_check]
 
-        if True in [not False in [self.markers['cross'] == value  for value in tripple] for tripple in grid_values]:
+        if True in [not False in [markers['cross'] == value  for value in tripple] for tripple in grid_values]:
             # 'X' has won
-            winner = 'cross'
+            return True
 
-
-        elif True in [not False in [self.markers['nought'] == value  for value in tripple] for tripple in grid_values]:
+        elif True in [not False in [markers['nought'] == value  for value in tripple] for tripple in grid_values]:
             # '0' has won
-            winner = 'nought'
-
-        if not winner is None:
-            return True, winner
+            return True
 
         else:
-            return False, winner
+            return False
+
+    def check_for_full_board(self):
+
+        if len(self.find_legal_moves()) ==0:
+
+            return True
+        
+        else:
+            False
     
 
 

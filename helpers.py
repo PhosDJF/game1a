@@ -3,4 +3,6 @@
 
 """
 
-linebreak = "===================="
+linebreak = "==================="
+buffer =    "       "
+markers = {'nought':'0', 'cross':'X'}
