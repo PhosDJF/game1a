@@ -36,4 +36,10 @@ class Player():
 
         print('to do')
 
+    def get_opposing_team(self):
 
+        return [a for a in ['nought', 'cross'] if not a == self.team][0]
+
+    def get_opposing_marker(self):
+
+        return helpers.markers[self.get_opposing_team()]

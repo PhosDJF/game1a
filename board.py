@@ -7,6 +7,7 @@ plan-
 
 """
 
+from io import RawIOBase
 from  helpers import linebreak , markers, buffer
 
 class board():
@@ -51,6 +52,8 @@ class board():
         self.grid[location[0]][ location[1]] = marker
 
     def check_within_board(self, location):
+
+        assert type(location) is list, 'location must be a list, got {0}: {1}'.format(type(location), location)
 
 
         if 0 <= location[0] <self.rows and 0 <= location[1] <self.columns:
@@ -101,7 +104,7 @@ class board():
 
             to_check = to_check + [[[i,j] for i in range(3)]]
 
-        to_check = to_check + [[[i,i] for i in range(3)]]
+        to_check = to_check + [[[i,i] for i in range(3)]] + [[[i,2-i] for i in range(3)]]
 
         grid_values = [[self.get_grid_value(location) for location in tripple] for tripple in to_check]
 
@@ -124,6 +127,23 @@ class board():
         
         else:
             False
+
+
+    def copy_grid_to_other(self, other):
+        """copy_grid_to_other
+
+        copies the values in this board's grid to another board
+
+        can't just set one grid equal to the other as they would alwasy have the same grid 
+        """
+
+        assert other.rows == self.rows
+
+        assert other.columns == self.columns
+
+        for i in range(self.rows):
+            for j in range(self.columns):
+                other.set_grid_value([i,j], self.get_grid_value([i,j]))
     
 
 

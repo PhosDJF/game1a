@@ -72,15 +72,19 @@ class game():
         return 'human'
         #TODO make this an option to choose, or be random
 
-    def set_ai(self, which_ai):
+    def set_ai(self):
+
+        which_ai=input('Which AI do you want to play with?')
 
         if which_ai=='random':
             self.ai = ai.RandomAI('random ai')
 
+        elif which_ai=='smart':
+            self.ai = ai.SlightlySmartAI('smart ai')
 
-    def ai_choice(self, marker):
-       
-        return self.ai.decide_move(self.game_board, marker)
+        elif which_ai=='solved':
+            self.ai = ai.SolvedAI('solved ai')
+
 
     def ask_human_for_move(self):
 
@@ -100,16 +104,18 @@ class game():
             print('the legal moves are: {}'.format(self.game_board.find_legal_moves()))
             return self.ask_human_for_move()
 
-    def take_turn(self, player):
+    def take_turn(self, player, opponent):
 
         # get the move
         if player.kind == 'human':
 
             location = self.ask_human_for_move()
+            print('doing the move {}'.format(location))
 
         else:
 
-            location = self.ai_choice(player.marker)
+            location = self.ai.decide_move(self.game_board, player, opponent)
+            print('doing the move {}'.format(location))
 
         # put the move on the board
         self.game_board.set_grid_value(location, player.marker)
@@ -151,7 +157,7 @@ class game():
         player2.set_type('human', opposite=True)
         player2.set_team('cross')
 
-        self.set_ai('random')
+        self.set_ai()
 
         rounds = try_int_input('How many rounds would you like to play?:', legal_range=range(1,10))
 
@@ -214,7 +220,7 @@ class game():
         while result is None:
 
             #player1
-            result = self.take_turn(player_list[player_ind])
+            result = self.take_turn(player_list[player_ind], player_list[(player_ind+1) % 2])
 
             if result == True:
 
