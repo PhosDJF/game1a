@@ -18,7 +18,7 @@ TODO:
 import board
 import random
 import player
-
+import ai
 from  helpers import linebreak 
 
 
@@ -72,13 +72,15 @@ class game():
         return 'human'
         #TODO make this an option to choose, or be random
 
+    def set_ai(self, which_ai):
 
-    def ai_choice(self):
+        if which_ai=='random':
+            self.ai = ai.RandomAI('random ai')
 
-        # randomly make a legal move
-        possible_moved = self.game_board.find_legal_moves()
 
-        return random.choice(possible_moved)
+    def ai_choice(self, marker):
+       
+        return self.ai.decide_move(self.game_board, marker)
 
     def ask_human_for_move(self):
 
@@ -107,7 +109,7 @@ class game():
 
         else:
 
-            location = self.ai_choice()
+            location = self.ai_choice(player.marker)
 
         # put the move on the board
         self.game_board.set_grid_value(location, player.marker)
@@ -148,6 +150,8 @@ class game():
 
         player2.set_type('human', opposite=True)
         player2.set_team('cross')
+
+        self.set_ai('random')
 
         rounds = try_int_input('How many rounds would you like to play?:', legal_range=range(1,10))
 
