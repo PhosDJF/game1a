@@ -9,10 +9,11 @@
 TODO:
 
  - add more comunication about what the AI is doing
+ - make communicatoin about the moves human frienly (i.e. not zero-indexed)
  - could throw in some amusing one-liners comentating the ai thinking
  - more thorough testing of wierd things - make it so the game doesn't fall over too easily
     - work around wierd inputs from the human for example
-- seperate classes for different ai
+- solved ai isnt working right now, e.g. human moves are - [0.0], [1,0], [1,1], [2,2]
 
 """
 import board
@@ -76,6 +77,7 @@ class game():
 
         which_ai=input('Which AI do you want to play with?')
 
+        
         if which_ai=='random':
             self.ai = ai.RandomAI('random ai')
 
@@ -84,6 +86,12 @@ class game():
 
         elif which_ai=='solved':
             self.ai = ai.SolvedAI('solved ai')
+        
+        else:
+            
+            print('expecting random or smart or solved')
+
+            self.set_ai(self)
 
 
     def ask_human_for_move(self):
@@ -113,7 +121,8 @@ class game():
             print('doing the move {}'.format(location))
 
         else:
-
+            print("see the current state:")
+            self.game_board.show()
             location = self.ai.decide_move(self.game_board, player, opponent)
             print('doing the move {}'.format(location))
 

@@ -104,7 +104,9 @@ class board():
 
             to_check = to_check + [[[i,j] for i in range(3)]]
 
-        to_check = to_check + [[[i,i] for i in range(3)]] + [[[i,2-i] for i in range(3)]]
+        to_check = to_check + [[[i,i] for i in range(3)]]
+
+        to_check = to_check + [[[i,2-i] for i in range(3)]]
 
         grid_values = [[self.get_grid_value(location) for location in tripple] for tripple in to_check]
 
